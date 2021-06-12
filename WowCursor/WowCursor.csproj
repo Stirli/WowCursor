@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="MVVM\RelayCommand.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RecordDevicesListViewModel.cs" />
     <Compile Include="ViewModels\SamplesBlocksViewModel.cs" />
     <Compile Include="MVVM\ViewModelBase.cs" />
     <Page Include="DesignTimeResources.xaml">

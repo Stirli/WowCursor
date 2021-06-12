@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace WowCursor.MVVM
@@ -23,6 +19,7 @@ namespace WowCursor.MVVM
             this.execute = execute;
             this.canExecute = canExecute;
         }
+
 
         public bool CanExecute(object parameter)
         {

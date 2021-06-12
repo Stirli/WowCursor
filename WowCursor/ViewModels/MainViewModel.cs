@@ -1,57 +1,52 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using WowCursor.MVVM;
 
 namespace WowCursor.ViewModels
 {
-    class MainViewModel:ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
-        public SamplesBlocksViewModel SamplesData{ get; private set; }
+        public SamplesBlocksViewModel SamplesData { get; private set; }
+        public RecordDevicesListViewModel RecordDevices { get; private set; }
         public MainViewModel()
         {
             SamplesData = new SamplesBlocksViewModel();
-            StartRecodCommand = new RelayCommand(button1_Click, (_) => IsWriteReady);
+            RecordDevices = new RecordDevicesListViewModel();
+            RecordDevices.ListChanged += (_, e) =>
+            Application.Current.Dispatcher.Invoke(() => CommandManager.InvalidateRequerySuggested());
+            StartRecodCommand = new RelayCommand(button1_Click, (_) => IsWriteReady && RecordDevices.IsListReady);
             StopRecodCommand = new RelayCommand(button2_Click, (_) => !IsWriteReady);
-            RecordDevices = new ObservableCollection<string>(EnumerateRecordDevices());
             IsWriteReady = true;
         }
-        public ICommand StartRecodCommand { get; set; }
-        public ICommand StopRecodCommand { get; set; }
+        public RelayCommand StartRecodCommand { get; set; }
+        public RelayCommand StopRecodCommand { get; set; }
         public bool IsWriteReady { get => isWriting; set => Set(nameof(IsWriteReady), ref isWriting, value); }
 
-        public ObservableCollection<string> RecordDevices { get; private set; }
         public int SelectedRecordDiviceIndex { get; set; }
 
-        private IEnumerable<string> EnumerateRecordDevices()
-        {
-            int waveInDevices = WaveIn.DeviceCount;
-            for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
-            {
-                WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
-                yield return $"Device {waveInDevice}: {deviceInfo.ProductName}, {deviceInfo.Channels} channels";
-            }
-        }
+
 
         // WaveIn - поток для записи
-        WaveIn waveIn;
+        private WaveIn waveIn;
+
         //Класс для записи в файл
-        WaveFileWriter writer;
+        private WaveFileWriter writer;
+
         //Имя файла для записи
-        string outputFilename = "имя_файла.wav";
+        private string outputFilename = "имя_файла.wav";
         private bool isWriting;
 
         //Получение данных из входного буфера 
-        void waveIn_DataAvailable(object sender, WaveInEventArgs e)
+        private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
         {
             //Записываем данные из буфера в файл
             writer.Write(e.Buffer, 0, e.BytesRecorded);
         }
+
         //Завершаем запись
-        void StopRecording()
+        private void StopRecording()
         {
             MessageBox.Show("StopRecording");
             waveIn.StopRecording();

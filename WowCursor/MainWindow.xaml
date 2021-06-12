@@ -20,9 +20,9 @@
                 <ui:ProgressBar  Value="{Binding SamplesData.Low}"/>
             </ui:SimpleStackPanel>
             <ComboBox ToolTip="{Binding SelectedValue, RelativeSource={RelativeSource Self}}" 
-                      ItemsSource="{Binding RecordDevices}" 
+                      ItemsSource="{Binding RecordDevices.Devices}" 
                       SelectedIndex="{Binding SelectedRecordDiviceIndex}"
-                      IsEnabled="{Binding IsWriteReady}" ></ComboBox>
+                      IsEnabled="{Binding RecordDevices.IsListReady}" ></ComboBox>
             <UniformGrid Rows="1" Margin="0 15 0 0">
                 <UniformGrid.Resources>
                 </UniformGrid.Resources>
