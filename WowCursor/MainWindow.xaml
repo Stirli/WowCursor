@@ -19,13 +19,20 @@
                 <ui:ProgressBar Value="{Binding SamplesData.Middle}"/>
                 <ui:ProgressBar  Value="{Binding SamplesData.Low}"/>
             </ui:SimpleStackPanel>
-            <ComboBox ToolTip="{Binding SelectedValue, RelativeSource={RelativeSource Self}}" 
-                      ItemsSource="{Binding RecordDevices.Devices}" 
-                      SelectedIndex="{Binding SelectedRecordDiviceIndex}"
-                      IsEnabled="{Binding RecordDevices.IsListReady}" ></ComboBox>
-            <UniformGrid Rows="1" Margin="0 15 0 0">
-                <UniformGrid.Resources>
-                </UniformGrid.Resources>
+            <DockPanel>
+                <ui:ProgressBar DockPanel.Dock="Bottom"
+                    Value="{Binding SelectedDevice.MasterPeak, NotifyOnSourceUpdated=True}"/>
+                <Button DockPanel.Dock="Right"
+                        Command="{Binding RecordDevices.UpdateCommand}">U</Button>
+                <ComboBox HorizontalAlignment="Stretch"
+                      SelectedItem="{Binding SelectedDevice}" 
+                      ToolTip="{Binding SelectedValue.FriendlyName, RelativeSource={RelativeSource Self}}" 
+                      ItemsSource="{Binding RecordDevices.Devices}"
+                      IsEnabled="{Binding RecordDevices.IsListReady}"
+                          DisplayMemberPath="FriendlyName"/>
+            </DockPanel>
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+            <UniformGrid Rows="1" Margin="0 8 0 0" >
                 <Button Content="Start" Command="{Binding StartRecodCommand}" HorizontalAlignment="Stretch"/>
                 <Button Grid.Column="1" Content="Stop" Command="{Binding StopRecodCommand}" HorizontalAlignment="Stretch"/>
             </UniformGrid>

@@ -1,7 +1,8 @@
-﻿using NAudio.Wave;
+﻿using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using WowCursor.MVVM;
 
@@ -10,33 +11,35 @@ namespace WowCursor.ViewModels
     public class RecordDevicesListViewModel : ViewModelBase
     {
 
-        public bool IsListReady => !updating;
+        private IEnumerable<AudioDeviceViewModel> _devices;
+        private bool _isListReady;
 
-        private List<string> devices;
-        private bool updating;
-
-        public event EventHandler ListChanged;
         public RecordDevicesListViewModel()
         {
-            UpdateRecordDevicesAsync();
+            UpdateCommand = new RelayCommand((_) => BeginUpdateDevicesList(), (_) => _isListReady);
+            BeginUpdateDevicesList();
         }
-        public IEnumerable<string> Devices => devices;
-        private void UpdateRecordDevicesAsync()
+
+
+        public event EventHandler ListChanged;
+
+        public IEnumerable<AudioDeviceViewModel> Devices => _devices;
+        public bool IsListReady { get => _isListReady; set => Set(nameof(IsListReady), ref _isListReady, value); }
+        public RelayCommand UpdateCommand { get; set; }
+
+        private void BeginUpdateDevicesList()
         {
-            updating = true;
+            _isListReady = false;
             int waveInDevices = WaveIn.DeviceCount;
             _ = Task.Run(() =>
               {
-                  var list = new List<string>(waveInDevices);
-                  for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
+                  using (MMDeviceEnumerator enumerator = new MMDeviceEnumerator())
                   {
-                      WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
-                      Thread.Sleep(1000);
-                      list.Add($"Device {waveInDevice}: {deviceInfo.ProductName}, {deviceInfo.Channels} channels");
+                      MMDeviceCollection devList = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+                      _devices = devList.Select(d => new AudioDeviceViewModel(d)).ToList();
                   }
 
-                  devices = list;
-                  updating = false;
+                  _isListReady = true;
                   OnPropertyChanged(nameof(Devices));
                   OnPropertyChanged(nameof(IsListReady));
                   ListChanged?.Invoke(this, new EventArgs());

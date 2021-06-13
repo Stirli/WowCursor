@@ -59,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MVVM\RelayCommand.cs" />
+    <Compile Include="ViewModels\AudioDeviceViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\RecordDevicesListViewModel.cs" />
     <Compile Include="ViewModels\SamplesBlocksViewModel.cs" />

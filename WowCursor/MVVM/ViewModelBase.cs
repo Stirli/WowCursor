@@ -11,7 +11,7 @@ namespace WowCursor.MVVM
 
         protected void Set<T>(string propertyName, ref T oldValue, T newValue)
         {
-            if (!oldValue.Equals(newValue))
+            if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.Equals(newValue)))
             {
                 oldValue = newValue;
                 OnPropertyChanged(propertyName);
